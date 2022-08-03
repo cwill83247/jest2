@@ -4,8 +4,9 @@ const { hasUncaughtExceptionCaptureCallback } = require("process");
 /**
  * @jest-environment jsdom
  */
- const {game, newGame, showScore, addTurn} = require("../game");               // we are importing the functions from game.js
+ const {game, newGame, showScore, addTurn, lightsOn, showTurns, playerTurn} = require("../game");               // we are importing the functions from game.js
  
+jest.spyOn(window, "alert").mockImplementation(() => { }); //this is used to check if an alert window has been triggered
 
 beforeAll(() => {                        //this is standard for DOM import ot load a html file
 let fs = require("fs");
@@ -56,8 +57,59 @@ describe("testing newGame works correctly", () => {
     });            
     test("should be one move in the computers array", () => {             //what we are testing 
         expect(game.currentGame.length).toBe(1);  
-    });    
-   
-     
+    }); 
+    test("expect data-listener to be true", () => {                                
+        newGame();
+        const elements = document.getElementsByClassName("circle"); // get all of the classes with name circle and creating elements const
+        for (let element of elements) {                                // iterating through the list each one becomes element                            
+            expect(element.getAttribute("data-listener")).toEqual("true");        //this is checking if the datalistenr fo reach element ( ie item with id of circle) in index html is NOw true default is false
+        }
+    });      
     
  });
+
+ describe ("gameplay works correctly",() => {
+    beforeEach (() => {  // before each test runs
+       game.score=0;
+       game.currentGame = [];
+       game.playerMoves = [];
+       addTurn();                     //we are testing addTurn
+    });
+    afterEach (() => {  // Aftereach test this is now runnignt he below to rest the values 
+        game.score=0;
+        game.currentGame = [];
+        game.playerMoves = [];
+        addTurn();
+     });
+     test("addTurn adds a new turn to the game", () => {
+        addTurn();
+        expect(game.currentGame.length).toBe(2);
+    });
+    test("has correct class been added to button to light it up", () => {
+        let button = document.getElementById(game.currentGame[0]); // here we are saying button is equal to game.currentGame and 1st item in the array
+        lightsOn(game.currentGame[0]);                                //lighton function being called using the current.Game  0 ID so 1st one in the array
+        expect(button.classList).toContain("light");               //we expect the button to contain the light class in this test
+    });
+    test("showTurns should update game.turnNumber", () => {
+        game.turnNumber = 42;                 //setting it to 42
+        showTurns();                            //this should reset turn number
+        expect(game.turnNumber).toBe(0);         //is turn number 0 
+    });
+    test("should increment the score if the turn is correct", () => { // if player completes the sequence correctly
+        game.playerMoves.push(game.currentGame[0]);
+        playerTurn();
+        expect(game.score).toBe(1);
+    });
+    test("turns progress to True when the computer is playing", () => {
+        showTurns();                            //this calls showTurns function
+        expect(game.turnInProgress).toBe(true);         //we are expecting it to be true to show gAME IS IN PROGRESS whilst computer is playing.
+    });
+    test("clicking during computer sequence should fail", () => {  //if whilst game starts someone trys to click clicks 
+        showTurns(); 
+        game.lastButton = "";                                          
+        document.getElementById("button2").click();                     //we are choosing button 2 to make sure no clicks are recogonised
+        expect(game.lastButton).toEqual("");                              //so this will stay blank  this is how our function will be set 
+    });
+});
+
+ 
