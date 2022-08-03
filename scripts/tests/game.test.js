@@ -4,7 +4,7 @@ const { hasUncaughtExceptionCaptureCallback } = require("process");
 /**
  * @jest-environment jsdom
  */
- const {game, newGame, showScore} = require("../game");               // we are importing the functions from game.js
+ const {game, newGame, showScore, addTurn} = require("../game");               // we are importing the functions from game.js
  
 
 beforeAll(() => {                        //this is standard for DOM import ot load a html file
@@ -38,18 +38,26 @@ describe("testing newGame works correctly", () => {
         game.score = 42;
         game.playerMoves= ["button1","button2"];
         game.currentGame= ["button1","button2"];
+        document.getElementById("score").innerText = "42";
         newGame();
     });
     test("should set game score to zero", () => {             //what we are testing 
         expect(game.score).toEqual(0);  
-    });      
-    test("should reset playerMoves", () => {             //what we are testing 
-        expect(game.playerMoves.length).toBe(0);  
-    });        
-    test("should reset current Game Array", () => {             //what we are testing 
-        expect(game.currentGame.length).toBe(0);                  // checking the array is 0 (empty)
-    });    
+    });  
     test("should display 0 for the score element within the html", () => {
         expect(document.getElementById("score").innerText).toEqual(0);    //we are saying we expect the html element with the ID "score" to have a value of "0"
-    });   
+    }); 
+    test("should be one move in the computers game array", () => {             //what we are testing 
+        expect(game.currentGame.length).toBe(1);  
+    });    
+    
+    test("should reset playerMoves", () => {             //what we are testing 
+        expect(game.playerMoves.length).toBe(0);  
+    });            
+    test("should be one move in the computers array", () => {             //what we are testing 
+        expect(game.currentGame.length).toBe(1);  
+    });    
+   
+     
+    
  });

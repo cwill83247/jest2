@@ -8,12 +8,19 @@ function newGame() {          //newgame function
     game.score = 0; 
     game.currentGame = [];
     game.playerMoves =[];           //setting score to 0 using the dot notation
-    showScore();                    //this just says run the showscore function as well 
+    showScore();  
+    addTurn();                  //this just says run the showscore function as well 
   
+}
+
+function addTurn() {
+    game.playerMoves =[];
+    game.currentGame.push(game.choices[(Math.floor(Math.random() * 4))]); // this pushs a random button selection into our gamechoices array
+    //showTurns()
 }
 function showScore() {
     document.getElementById("score").innerText= game.score; 
 }
 
 
-module.exports ={game, newGame,showScore};    //this exports it so JEST can run tests against it. in {} becuase we will be exportign more than 1 FUNCTION
+module.exports ={game, newGame,showScore, addTurn};    //this exports it so JEST can run tests against it. in {} becuase we will be exportign more than 1 FUNCTION
